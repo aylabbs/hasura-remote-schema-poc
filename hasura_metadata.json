@@ -1,0 +1,87 @@
+{
+  "resource_version": 26,
+  "metadata": {
+    "version": 3,
+    "sources": [
+      {
+        "name": "default",
+        "kind": "postgres",
+        "tables": [
+          {
+            "table": {
+              "name": "files",
+              "schema": "public"
+            },
+            "remote_relationships": [
+              {
+                "definition": {
+                  "to_remote_schema": {
+                    "lhs_fields": [
+                      "id"
+                    ],
+                    "remote_field": {
+                      "relatedDataById": {
+                        "arguments": {
+                          "id": "$id"
+                        }
+                      }
+                    },
+                    "remote_schema": "signer"
+                  }
+                },
+                "name": "signed"
+              }
+            ],
+            "select_permissions": [
+              {
+                "role": "user",
+                "permission": {
+                  "columns": [
+                    "key",
+                    "id"
+                  ],
+                  "filter": {}
+                },
+                "comment": ""
+              }
+            ]
+          }
+        ],
+        "configuration": {
+          "connection_info": {
+            "database_url": {
+              "from_env": "HASURA_GRAPHQL_DATABASE_URL"
+            },
+            "isolation_level": "read-committed",
+            "pool_settings": {
+              "connection_lifetime": 600,
+              "idle_timeout": 180,
+              "max_connections": 50,
+              "retries": 1
+            },
+            "use_prepared_statements": true
+          }
+        }
+      }
+    ],
+    "remote_schemas": [
+      {
+        "name": "signer",
+        "definition": {
+          "url": "{{HASURA_GRAPHQL_REMOTE_SCHEMA_URL}}",
+          "timeout_seconds": 60,
+          "customization": {}
+        },
+        "comment": "",
+        "permissions": [
+          {
+            "role": "user",
+            "definition": {
+              "schema": "schema  { query: Query }\n\ntype Query { relatedDataById(id: String! @preset(value: \"unauthorized\")): relatedData\n}\n\ntype relatedData { url: String!\n}"
+            }
+          }
+        ]
+      }
+    ]
+  }
+}

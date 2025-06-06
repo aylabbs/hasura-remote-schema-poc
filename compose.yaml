@@ -1,0 +1,40 @@
+services:
+  postgres:
+    image: postgres:latest
+    container_name: remote-schema-postgres
+    restart: always
+    environment:
+      POSTGRES_PASSWORD: mypassword
+      POSTGRES_USER: myuser
+      POSTGRES_DB: mydb
+    volumes:
+      - remote_schema_pgdata:/var/lib/postgresql/data
+
+  hasura:
+    image: hasura/graphql-engine:v2.36.10
+    container_name: remote-schema-hasura
+    ports:
+      - "8080:8080"
+    restart: always
+    environment:
+      HASURA_GRAPHQL_DATABASE_URL: postgres://myuser:mypassword@postgres:5432/mydb
+      HASURA_GRAPHQL_ENABLE_CONSOLE: true
+      HASURA_GRAPHQL_DEV_MODE: true
+      HASURA_GRAPHQL_ADMIN_SECRET: myadminsecret
+      HASURA_GRAPHQL_REMOTE_SCHEMA_URL: http://remote-graphql:4000
+      HASURA_GRAPHQL_ENABLE_REMOTE_SCHEMA_PERMISSIONS: true
+
+  remote-graphql:
+    container_name: remote-graphql
+    build:
+      context: ./remote-graphql
+    ports:
+      - "4000:4000"
+    volumes:
+      - ./remote-graphql:/app
+    environment:
+      NODE_ENV: development
+    command: npm run dev
+
+volumes:
+  remote_schema_pgdata:

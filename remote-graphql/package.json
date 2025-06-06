@@ -1,0 +1,13 @@
+{
+  "name": "remote-graphql",
+  "version": "1.0.0",
+  "type": "module",
+  "main": "index.ts",
+  "scripts": {
+    "dev": "node --watch index.ts"
+  },
+  "dependencies": {
+    "apollo-server": "^3.13.0",
+    "graphql": "^16.11.0"
+  }
+}
